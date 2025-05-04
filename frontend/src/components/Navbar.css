@@ -1,0 +1,37 @@
+/* src/components/Navbar.css */
+
+/* Reduce custom CSS significantly, rely on Bootstrap */
+
+/* Example: Adjust brand styling if needed */
+.navbar-brand {
+    font-weight: bold;
+    /* font-size: 1.6em; */ /* Bootstrap handles sizing */
+  }
+  
+  /* Example: Adjust spacing if Bootstrap defaults aren't quite right */
+  /* .navbar-nav .nav-item {
+    margin-left: 15px;
+  } */
+  
+  /* Example: Custom active state if not using default */
+  /* .navbar-nav .nav-link.active {
+    font-weight: bold;
+    color: #000 !important;
+  } */
+  
+  /* Remove custom underline effects if using Bootstrap defaults */
+  /* .navbar-nav a::after { display: none; } */
+  
+  /* Adjust button styles if needed */
+  /* .navbar-auth .btn {
+    margin-left: 10px;
+  } */
+  
+  /* Keep minimal overrides */
+  .navbar {
+      min-height: 60px; /* Ensure minimum height if needed */
+  }
+  
+  .navbar-text {
+      font-size: 0.9em;
+  }

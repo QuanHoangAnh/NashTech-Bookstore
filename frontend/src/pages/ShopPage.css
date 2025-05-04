@@ -1,0 +1,79 @@
+/* src/pages/ShopPage.css */
+
+/* Keep minimal overrides and custom styles not covered by Bootstrap */
+
+.shop-title-custom {
+  font-weight: normal; /* Override Bootstrap default if needed */
+}
+.active-filters-title-custom {
+  font-size: 0.7em;
+}
+
+/* Custom Accordion Body/List styling */
+.filter-list-custom {
+    font-size: 0.9em;
+}
+.filter-list-custom .list-group-item {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    cursor: pointer;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0; /* Remove radius from list items */
+}
+.filter-list-custom .list-group-item:last-child {
+    border-bottom: 0;
+}
+.filter-list-custom .list-group-item.active {
+    /* Bootstrap handles active state well, maybe minor tweaks */
+    font-weight: bold;
+}
+
+.rating-list-custom .list-group-item {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.filter-star {
+  margin-right: 5px;
+  font-size: 1.1em;
+  color: #ffc107; /* Gold color for stars */
+}
+.filter-star .star.empty {
+  color: #e4e5e9; /* Light grey for empty stars */
+}
+.filter-star .star.filled {
+   color: #ffc107;
+}
+
+/* Ensure form selects in controls are reasonably sized */
+.shop-controls select.form-select-sm {
+    max-width: 200px; /* Prevent them getting too wide */
+}
+
+
+/* Remove styles replaced by Bootstrap */
+/* .shop-page-container { ... } */
+/* .shop-title { ... } */
+/* .active-filters-title { ... } */
+/* .shop-page-layout { ... } */
+/* .filter-sidebar { ... } */
+/* .filter-sidebar h4 { ... } */
+/* .filter-accordion-item { ... } */ /* If using custom accordion */
+/* .filter-accordion-header { ... } */ /* If using custom accordion */
+/* .filter-accordion-content { ... } */ /* If using custom accordion */
+/* .filter-list { ... } */
+/* .filter-list li { ... } */
+/* .shop-main-content { ... } */
+/* .shop-controls-bar { ... } */
+/* .pagination-info { ... } */
+/* .shop-controls { ... } */
+/* .shop-controls select { ... } */
+/* .book-list { ... } */
+/* .pagination { ... } */ /* If using custom pagination */
+/* .pagination button { ... } */ /* If using custom pagination */
+/* .error-message.shop-error { ... } */ /* Replaced by Alert */
+/* .loading-indicator { ... } */ /* Replaced by Spinner */
+
+/* Responsive adjustments are largely handled by Bootstrap rows/cols/utilities */
+/* @media (max-width: ...) { ... } */

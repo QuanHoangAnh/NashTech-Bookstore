@@ -1,0 +1,79 @@
+/* src/pages/CartPage.css */
+
+/* Keep minimal overrides */
+
+.cart-page-custom h2 {
+  font-weight: normal; /* Match mockup */
+}
+
+.cart-items-container-custom {
+  overflow: hidden; /* Apply border radius correctly */
+}
+
+.cart-header-custom {
+  font-size: 0.85em;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cart-item-custom {
+  /* Add spacing or keep list-group default */
+}
+
+.cart-item-image-custom {
+  width: 60px;
+  height: 80px;
+  object-fit: contain;
+  border: 1px solid #eee;
+}
+
+.quantity-input-cart .form-control {
+    max-width: 50px;
+    background-color: #fff; /* Ensure readable */
+}
+.quantity-input-cart .btn {
+    /* Adjust button size/padding if needed */
+}
+
+.remove-button-custom {
+    border-radius: 50%; /* Make remove button round */
+    padding: 0.1rem 0.4rem;
+    line-height: 1;
+    font-size: 1.1rem;
+}
+
+.cart-summary-custom {
+  height: fit-content; /* Stick to top */
+}
+
+/* Remove styles replaced by Bootstrap */
+/* .cart-page { ... } */
+/* .cart-page h2 { ... } */
+/* .cart-layout { ... } */
+/* .cart-items-container { ... } */
+/* .cart-header { ... } */
+/* .header-product, .header-price, ... { ... } */
+/* .cart-items-list { ... } */
+/* .cart-item { ... } */
+/* .cart-item-product { ... } */
+/* .cart-item-image { ... } */
+/* .cart-item-title-author { ... } */
+/* .cart-item-title { ... } */
+/* .cart-item-author { ... } */
+/* .cart-item-price { ... } */
+/* .cart-item-price-display ... { ... } */
+/* .cart-item-quantity { ... } */
+/* .cart-item-quantity button { ... } */
+/* .quantity-display-cart { ... } */
+/* .cart-item-total { ... } */
+/* .cart-item-remove { ... } */
+/* .remove-button { ... } */
+/* .cart-summary { ... } */
+/* .cart-summary h3 { ... } */
+/* .cart-total-amount { ... } */
+/* .place-order-button { ... } */
+/* .error-message.cart-error { ... } */ /* Replaced by Alert */
+/* .button-link { ... } */ /* For empty cart */
+
+/* Responsive adjustments handled by Bootstrap grid */

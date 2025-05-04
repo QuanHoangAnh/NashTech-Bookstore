@@ -1,0 +1,33 @@
+/* src/pages/AboutPage.css */
+
+/* Keep minimal overrides if needed */
+
+.about-page-custom .page-title-custom {
+  /* Adjustments if Bootstrap's border/margin isn't exactly right */
+  font-weight: normal; /* If needed */
+}
+
+.welcome-section-custom p {
+  /* line-height: 1.6; */ /* Bootstrap might handle this */
+  /* color: #444; */ /* Bootstrap text colors */
+}
+
+.about-section-custom p {
+  /* line-height: 1.6; */
+  /* color: #444; */
+  margin-bottom: 1rem; /* Bootstrap default */
+}
+
+/* Remove styles replaced by Bootstrap */
+/* .about-page { ... } */
+/* .page-title { ... } */
+/* .welcome-section { ... } */
+/* .welcome-section h2 { ... } */
+/* .welcome-section p { ... } */
+/* .about-section { ... } */
+/* .about-section h2 { ... } */
+/* .about-section p { ... } */
+/* .two-column-layout { ... } */
+
+/* Responsive adjustments handled by Bootstrap grid */
+/* @media (max-width: ...) { ... } */

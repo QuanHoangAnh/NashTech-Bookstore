@@ -1,0 +1,41 @@
+/* src/components/ReviewCard.css */
+
+.review-card-custom {
+    /* Remove default list-group-item borders if needed, or rely on parent */
+    border: 0;
+    border-bottom: 1px solid #eee !important; /* Add bottom border back */
+    border-radius: 0 !important; /* Remove radius */
+}
+.review-card-custom:last-child {
+    border-bottom: 0 !important; /* Remove border for last item */
+}
+
+.review-title-custom {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.review-meta-custom {
+    font-size: 0.85em;
+}
+
+.review-details-custom {
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.star-rating-display {
+    font-size: 1.1em; /* Adjust star size */
+    /* color handled by text-warning */
+}
+
+
+/* Remove styles replaced by Bootstrap utilities/list-group */
+/* .review-card { ... } */
+/* .review-header { ... } */
+/* .review-title { ... } */
+/* .review-rating { ... } */
+/* .star-rating .star { ... } */
+/* .review-meta { ... } */
+/* .review-meta .review-user { ... } */
+/* .review-details { ... } */

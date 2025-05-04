@@ -1,0 +1,21 @@
+/* src/index.css */
+
+body {
+  margin: 0; /* Keep margin reset */
+  /* Bootstrap sets its own font stack, override if needed */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #fff; /* Ensure a base background */
+  color: #212529; /* Bootstrap default text color */
+}
+
+/* Code font family might still be useful */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Remove other global resets or styles now handled by Bootstrap */

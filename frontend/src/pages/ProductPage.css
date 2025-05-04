@@ -1,0 +1,76 @@
+/* src/pages/ProductPage.css */
+
+/* Keep minimal overrides for Bootstrap elements */
+
+.product-page-custom .product-image-custom {
+  max-height: 450px; /* Control max image height */
+  width: auto;
+  object-fit: contain;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.product-description-custom {
+  line-height: 1.6;
+  color: #444;
+}
+
+.product-order-panel-custom {
+  height: fit-content; /* Allow panel height to adjust */
+}
+
+.quantity-input-custom .btn {
+    /* Adjust button styling if needed */
+}
+
+.customer-reviews-section-custom h2 {
+    margin-bottom: 1.5rem; /* Add space below heading */
+}
+
+.review-list-custom .list-group-item {
+    /* Style review cards if using list group */
+    margin-bottom: 1rem;
+    border: 1px solid #eee;
+    border-radius: 0.25rem;
+}
+
+.review-form-panel-custom {
+    /* Add specific styling for the form panel if needed */
+}
+
+
+/* Add styles for the new span if needed */
+.quantity-input-custom .quantity-display {
+  background-color: #fff; /* Match input background */
+  border-color: #dee2e6 !important; /* Match Bootstrap input border color, use !important if needed */
+  font-size: 1rem; /* Match default input font size */
+  /* Add any other specific alignment or sizing needed */
+}
+
+/* Ensure the InputGroup itself is centered or sized appropriately if needed */
+.quantity-input-custom {
+   /* max-width: 150px; */ /* Example: constrain width */
+   /* margin-left: auto; */ /* Example: push right */
+   /* margin-right: auto; */ /* Example: center */
+}
+
+.quantity-input-custom .form-control {
+    max-width: 50px;
+    font-weight: bold;
+    color: #212529;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+.filter-row:hover {
+    background-color: rgba(0,0,0,0.03);
+}
+
+.active-filter {
+    font-weight: bold;
+    background-color: rgba(255,193,7,0.1);
+}
+
+.active-filter-text {
+    font-size: 0.9rem;
+    font-weight: normal;
+}

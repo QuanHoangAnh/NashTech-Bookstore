@@ -45,9 +45,12 @@ function CartPage() {
         const discountPrice = item.discountPrice ? parseFloat(item.discountPrice) : null;
         const quantity = Number(item.quantity) || 0;
 
-        const effectivePrice = (discountPrice !== null && !isNaN(discountPrice) && discountPrice < originalPrice)
-            ? discountPrice
-            : originalPrice;
+        // Ensure discount is valid: not null, is a number, and less than original price
+        const hasValidDiscount = discountPrice !== null && 
+                                !isNaN(discountPrice) && 
+                                discountPrice < originalPrice;
+        
+        const effectivePrice = hasValidDiscount ? discountPrice : originalPrice;
 
         return effectivePrice * quantity;
     };
@@ -119,7 +122,7 @@ function CartPage() {
 
             <div className="row g-4">
                 {/* Cart Items List */}
-                <div className="col-lg-8">
+                <div className="col-lg-8 order-lg-1 order-2">
                     <div className="cart-items-container-custom border rounded">
                         {/* Cart Header Row (Optional but good for clarity) */}
                         <div className="cart-header-custom d-none d-md-flex p-2 bg-light border-bottom">
@@ -141,7 +144,7 @@ function CartPage() {
                                     <div key={item.id} className="list-group-item p-3 cart-item-custom">
                                         <div className="row align-items-center g-3">
                                             {/* Product Column */}
-                                            <div className="col-md-5 d-flex align-items-center">
+                                            <div className="col-12 col-md-5 d-flex align-items-center">
                                                 <img src={coverImageUrl} alt={item.title || 'Book cover'} onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER_URL; }} className="img-fluid me-3 cart-item-image-custom" />
                                                 <div>
                                                     <Link to={`/books/${item.id}`} className="fw-bold text-dark text-decoration-none" target="_blank" rel="noopener noreferrer">
@@ -154,11 +157,11 @@ function CartPage() {
                                             {/* Price Column */}
                                             <div className="col-6 col-md-2 text-md-center">
                                                 <span className="d-md-none small text-muted">Price: </span>
-                                                {/* *** USE NEW COMPONENT *** */}
                                                 <PriceDisplay
-                                                    originalPrice={item.price} // Original price stored in cart item
-                                                    discountPrice={item.discountPrice} // Discount price stored in cart item
-                                                    className="justify-content-center justify-content-md-center" // Center align
+                                                    originalPrice={item.price}
+                                                    discountPrice={item.discountPrice}
+                                                    className="justify-content-center justify-content-md-center price-display"
+                                                    vertical={true}
                                                 />
                                             </div>
 
@@ -175,7 +178,7 @@ function CartPage() {
                                             {/* Total Column */}
                                             <div className="col-6 col-md-2 text-md-end">
                                                 <span className="d-md-none small text-muted">Total: </span>
-                                                <span className="fw-bold">${(lineTotal || 0).toFixed(2)}</span>
+                                                <span className="line-total">${(lineTotal || 0).toFixed(2)}</span>
                                             </div>
 
                                             {/* Remove Column */}
@@ -193,10 +196,10 @@ function CartPage() {
                 </div>
 
                 {/* Cart Summary */}
-                <div className="col-lg-4">
-                    <div className="border rounded p-3 bg-light cart-summary-custom">
+                <div className="col-lg-4 order-lg-2 order-1 mb-3 mb-lg-0">
+                    <div className="border rounded p-3 bg-light cart-summary-custom sticky-top" style={{ top: '1rem' }}>
                         <h3 className="text-center border-bottom pb-2 mb-3">Cart Totals</h3>
-                        <div className="d-flex justify-content-between mb-3 fs-4">
+                        <div className="d-flex justify-content-between mb-3">
                             <span>Subtotal</span>
                             <span className="fw-bold">${(cartTotalAmount || 0).toFixed(2)}</span>
                         </div>
@@ -218,3 +221,8 @@ function CartPage() {
 }
 
 export default CartPage;
+
+
+
+
+

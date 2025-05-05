@@ -1,19 +1,14 @@
 /* src/pages/HomePage.css */
 
-/* Keep custom styles for react-slick arrows and potentially overrides */
-
-/* Ensure slick-initialized elements don't have conflicting margins/paddings */
+/* Slider styling */
 .slick-initialized .slick-slide {
-  padding: 0 10px; /* Adjust spacing between slides if needed */
+  padding: 0 10px;
   box-sizing: border-box;
 }
 
-/* Custom Arrow Styling (Keep or adapt) */
+/* Custom Arrow Styling */
 .slider-container {
-  /* border: 1px solid #dee2e6; */ /* Optional: Use BS border class on element instead */
-  /* border-radius: 8px; */ /* Optional: Use BS rounded class */
-  /* padding: 20px 60px; */ /* Padding handled by px-5 and arrow positioning */
-  /* margin-top: 20px; */ /* Use Bootstrap margin utilities like mb-3 */
+  transition: all 0.3s ease;
 }
 
 .custom-arrow {
@@ -22,34 +17,41 @@
   transform: translateY(-50%);
   z-index: 2;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
-  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dee2e6;
   color: #333;
-  padding: 5px 10px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  font-size: 1.5rem; /* Adjust size */
+  font-size: 1.2rem;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .custom-arrow:hover {
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: #f8f9fa;
   color: #000;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
 .custom-arrow-prev {
-  left: 10px; /* Position inside the container padding */
+  left: 10px;
 }
 
 .custom-arrow-next {
-  right: 10px; /* Position inside the container padding */
+  right: 10px;
 }
 
-/* View All Button Customizations (Keep or adapt) */
+/* View All Button Customizations */
 .view-all-button-custom {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  font-weight: 500;
 }
 
 .view-all-button-custom .arrow {
@@ -58,24 +60,81 @@
 }
 
 .view-all-button-custom:hover .arrow {
-  transform: translateX(2px);
+  transform: translateX(4px);
 }
 
-/* Featured Books Grid Container (Optional border/padding) */
+/* Featured Books Grid Container */
 .featured-books-grid-container {
-    background-color: #f8f9fa; /* Light background */
+  background-color: #ffffff;
+  transition: all 0.3s ease;
 }
 
-/* Remove styles replaced by Bootstrap */
-/* .homepage { ... } */
-/* .on-sale-section, .featured-books-section { ... } */
-/* .section-header { ... } */
-/* .section-header h2 { ... } */
-/* .view-all-button { ... } */
-/* .tabs { ... } */
-/* .tab-button { ... } */
-/* .featured-books-grid { ... } */
-/* .loading-state, .error-state { ... } */ /* Replaced with Bootstrap alerts/spinners */
+/* Slick dots customization */
+.slick-dots {
+  bottom: -30px;
+  display: flex !important;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
 
-/* Responsive adjustments might be handled by Bootstrap grid/utilities */
-/* @media (max-width: ...) { ... } */
+.slick-dots li {
+  position: relative;
+  display: inline-block;
+  margin: 0 5px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.slick-dots li button {
+  border: 0;
+  background: transparent;
+  display: block;
+  height: 20px;
+  width: 20px;
+  outline: none;
+  line-height: 0;
+  font-size: 0;
+  color: transparent;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.slick-dots li button:before {
+  font-size: 10px;
+  line-height: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  content: '•';
+  text-align: center;
+  color: #6c757d;
+  opacity: 0.25;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #0d6efd;
+  opacity: 0.75;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .custom-arrow {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .slider-container {
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+  }
+}
+
+

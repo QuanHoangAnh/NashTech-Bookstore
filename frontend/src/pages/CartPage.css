@@ -19,6 +19,11 @@
 
 .cart-item-custom {
   /* Add spacing or keep list-group default */
+  transition: background-color 0.15s ease;
+}
+
+.cart-item-custom:hover {
+  background-color: rgba(0,0,0,0.01);
 }
 
 .cart-item-image-custom {
@@ -26,14 +31,46 @@
   height: 80px;
   object-fit: contain;
   border: 1px solid #eee;
+  background-color: #fff;
+  padding: 2px;
+}
+
+/* Improve price and quantity display */
+.cart-item-custom .price-display {
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.cart-item-custom .price-display .small {
+  font-size: 0.85rem;
+  opacity: 0.8;
 }
 
 .quantity-input-cart .form-control {
-    max-width: 50px;
-    background-color: #fff; /* Ensure readable */
+  max-width: 50px;
+  background-color: #fff;
+  text-align: center;
+  font-weight: normal;
+  font-size: 0.95rem;
 }
-.quantity-input-cart .btn {
-    /* Adjust button size/padding if needed */
+
+.cart-item-custom .fw-bold {
+  font-weight: 600 !important; /* Slightly reduce boldness */
+}
+
+/* Improve line total display */
+.cart-item-custom .line-total {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Improve cart totals section */
+.cart-summary-custom .fs-4 {
+  font-size: 1.1rem !important;
+}
+
+.cart-summary-custom .fw-bold {
+  font-weight: 600 !important;
 }
 
 .remove-button-custom {
@@ -45,35 +82,24 @@
 
 .cart-summary-custom {
   height: fit-content; /* Stick to top */
+  position: sticky;
+  top: 1rem;
 }
 
-/* Remove styles replaced by Bootstrap */
-/* .cart-page { ... } */
-/* .cart-page h2 { ... } */
-/* .cart-layout { ... } */
-/* .cart-items-container { ... } */
-/* .cart-header { ... } */
-/* .header-product, .header-price, ... { ... } */
-/* .cart-items-list { ... } */
-/* .cart-item { ... } */
-/* .cart-item-product { ... } */
-/* .cart-item-image { ... } */
-/* .cart-item-title-author { ... } */
-/* .cart-item-title { ... } */
-/* .cart-item-author { ... } */
-/* .cart-item-price { ... } */
-/* .cart-item-price-display ... { ... } */
-/* .cart-item-quantity { ... } */
-/* .cart-item-quantity button { ... } */
-/* .quantity-display-cart { ... } */
-/* .cart-item-total { ... } */
-/* .cart-item-remove { ... } */
-/* .remove-button { ... } */
-/* .cart-summary { ... } */
-/* .cart-summary h3 { ... } */
-/* .cart-total-amount { ... } */
-/* .place-order-button { ... } */
-/* .error-message.cart-error { ... } */ /* Replaced by Alert */
-/* .button-link { ... } */ /* For empty cart */
+@media (max-width: 767.98px) {
+  .cart-item-custom .row > div {
+    margin-bottom: 0.5rem;
+  }
+  
+  .cart-item-custom .row > div:last-child {
+    margin-bottom: 0;
+  }
+  
+  .quantity-input-cart {
+    max-width: 120px;
+  }
+}
 
 /* Responsive adjustments handled by Bootstrap grid */
+
+

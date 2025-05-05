@@ -3,45 +3,23 @@
   width: 100%;
 }
 
-.footer-content {
-  max-width: 1200px;
-  width: 100%;
-  margin: 0;
-  padding-left: 20px; /* Only add left padding */
-}
-
-.footer-left {
-  text-align: left;
-  margin: 0;
-  padding: 0;
-}
-
-.footer-logo-name {
-  margin: 0 0 10px 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .footer-logo {
   width: 64px;
   height: 64px;
   object-fit: contain;
 }
 
-.footer-logo-name span {
-  font-weight: bold;
-  font-size: 1.2em;
-  color: #333;
+/* Social media icons hover effect */
+.app-footer a:hover {
+  color: var(--bs-primary) !important;
+  transition: color 0.3s ease;
 }
 
-.footer-details {
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .footer-logo {
+    width: 48px;
+    height: 48px;
+  }
 }
 
-.footer-details p {
-  margin: 0;
-  font-size: 0.95em;
-}

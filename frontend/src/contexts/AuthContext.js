@@ -1,6 +1,7 @@
 // src/contexts/AuthContext.js
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useRef } from 'react';
 import apiService from '../services/api'; // We'll update this service
+import { useCart } from './CartContext';
 
 const AuthContext = createContext();
 
@@ -12,58 +13,35 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('bookwormToken'));
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true); // To track initial user fetch
+  
+  // Fix: Move useCart outside of conditional
+  const cartContext = useCart();
+  const saveCartToBackend = cartContext ? cartContext.saveCartToBackend : async () => true;
 
-  // Function to fetch user data if token exists
-  const fetchCurrentUser = useCallback(async (currentToken) => {
-      if (currentToken) {
-          try {
-              // apiService will need updating to handle auth header
-              const response = await apiService.getCurrentUser(currentToken);
-              setCurrentUser(response.data);
-          } catch (error) {
-              console.error("Failed to fetch current user:", error);
-              // Token might be invalid/expired, clear it
-              setToken(null);
-              setCurrentUser(null);
-              localStorage.removeItem('bookwormToken');
-          }
-      }
-      setLoading(false); // Finished initial loading attempt
-  }, []); // No dependencies needed if apiService is stable
+  // Create refs for functions to avoid dependency cycles
+  const logoutRef = useRef();
+  const refreshTokenRef = useRef();
 
-  // Effect to load user data on initial load or when token changes
-  useEffect(() => {
-      setLoading(true);
-      const currentToken = localStorage.getItem('bookwormToken');
-      setToken(currentToken); // Ensure state matches localStorage
-      fetchCurrentUser(currentToken);
-  }, [fetchCurrentUser]); // Rerun if fetchCurrentUser changes (it shouldn't)
-
-
-  const login = async (email, password) => {
+  // Define logout function
+  logoutRef.current = async () => {
     try {
-      const response = await apiService.loginUser(email, password);
-      const { access_token, refresh_token } = response.data;
-      setToken(access_token);
-      localStorage.setItem('bookwormToken', access_token);
-      localStorage.setItem('bookwormRefreshToken', refresh_token);
-      await fetchCurrentUser(access_token);
-      return true;
+      // If user is logged in, save their cart to backend before logging out
+      if (currentUser) {
+        await saveCartToBackend();
+      }
     } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
+      console.error("Failed to save cart before logout:", error);
+    } finally {
+      // Clear auth data regardless of cart save success/failure
+      setToken(null);
+      setCurrentUser(null);
+      localStorage.removeItem('bookwormToken');
+      localStorage.removeItem('bookwormRefreshToken');
     }
   };
 
-  const logout = () => {
-    setToken(null);
-    setCurrentUser(null);
-    localStorage.removeItem('bookwormToken');
-    // Optionally redirect to home page or clear other state
-    // No need to call apiService.logout unless you have a backend logout endpoint
-  };
-
-  const refreshToken = async () => {
+  // Define refreshToken function
+  refreshTokenRef.current = async () => {
     try {
       const currentRefreshToken = localStorage.getItem('bookwormRefreshToken');
       if (!currentRefreshToken) return false;
@@ -75,11 +53,30 @@ export const AuthProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error("Token refresh failed:", error);
-      logout();
+      logoutRef.current();
       return false;
     }
   };
 
+  // Function to fetch user data if token exists
+  const fetchCurrentUser = useCallback(async (currentToken) => {
+    if (currentToken) {
+      try {
+        // apiService will need updating to handle auth header
+        const response = await apiService.getCurrentUser(currentToken);
+        setCurrentUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch current user:", error);
+        // Token might be invalid/expired, clear it
+        setToken(null);
+        setCurrentUser(null);
+        localStorage.removeItem('bookwormToken');
+      }
+    }
+    setLoading(false); // Finished initial loading attempt
+  }, []);
+
+  // Check token expiration
   const checkTokenExpiration = useCallback(() => {
     const token = localStorage.getItem('bookwormToken');
     if (!token) return;
@@ -97,12 +94,29 @@ export const AuthProvider = ({ children }) => {
       
       if (timeUntilExpiration < 300000 && timeUntilExpiration > 0) {
         // Token expires in less than 5 minutes, refresh it
-        refreshToken();
+        refreshTokenRef.current();
       }
     } catch (error) {
       console.error("Error checking token expiration:", error);
     }
   }, []);
+
+  // Wrapper functions to expose the ref functions
+  const logout = useCallback(() => {
+    return logoutRef.current();
+  }, []);
+
+  const refreshToken = useCallback(() => {
+    return refreshTokenRef.current();
+  }, []);
+
+  // Effect to load user data on initial load or when token changes
+  useEffect(() => {
+    setLoading(true);
+    const currentToken = localStorage.getItem('bookwormToken');
+    setToken(currentToken); // Ensure state matches localStorage
+    fetchCurrentUser(currentToken);
+  }, [fetchCurrentUser]); // Rerun if fetchCurrentUser changes (it shouldn't)
 
   // Set up interval to check token
   useEffect(() => {
@@ -110,12 +124,28 @@ export const AuthProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [checkTokenExpiration]);
 
+  const login = async (email, password) => {
+    try {
+      const response = await apiService.loginUser(email, password);
+      const { access_token, refresh_token } = response.data;
+      setToken(access_token);
+      localStorage.setItem('bookwormToken', access_token);
+      localStorage.setItem('bookwormRefreshToken', refresh_token);
+      await fetchCurrentUser(access_token);
+      return true;
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
+  };
+
   const value = {
     token,
     currentUser,
     loading, // Provide loading state for initial user check
     login,
     logout,
+    refreshToken,
   };
 
   return (
@@ -124,3 +154,7 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+
+
+

@@ -1,37 +1,77 @@
 /* src/components/Navbar.css */
 
-/* Reduce custom CSS significantly, rely on Bootstrap */
+/* Bootstrap icon support */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css");
 
-/* Example: Adjust brand styling if needed */
+/* Navbar styling improvements */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  min-height: 60px;
+}
+
 .navbar-brand {
-    font-weight: bold;
-    /* font-size: 1.6em; */ /* Bootstrap handles sizing */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Improve nav links */
+.navbar-nav .nav-link {
+  font-weight: 500;
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+/* Active link indicator */
+.navbar-nav .nav-link.active {
+  color: var(--bs-primary);
+}
+
+.navbar-nav .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 2px;
+  background-color: var(--bs-primary);
+}
+
+/* Search bar improvements */
+.navbar form .input-group {
+  width: auto;
+  min-width: 200px;
+}
+
+/* Cart badge styling */
+.nav-link .badge {
+  font-size: 0.65rem;
+  position: relative;
+  top: -1px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 575.98px) {
+  .navbar-collapse {
+    padding: 1rem 0;
   }
   
-  /* Example: Adjust spacing if Bootstrap defaults aren't quite right */
-  /* .navbar-nav .nav-item {
-    margin-left: 15px;
-  } */
-  
-  /* Example: Custom active state if not using default */
-  /* .navbar-nav .nav-link.active {
-    font-weight: bold;
-    color: #000 !important;
-  } */
-  
-  /* Remove custom underline effects if using Bootstrap defaults */
-  /* .navbar-nav a::after { display: none; } */
-  
-  /* Adjust button styles if needed */
-  /* .navbar-auth .btn {
-    margin-left: 10px;
-  } */
-  
-  /* Keep minimal overrides */
-  .navbar {
-      min-height: 60px; /* Ensure minimum height if needed */
+  .navbar form {
+    margin: 0.5rem 0;
+    width: 100%;
   }
   
-  .navbar-text {
-      font-size: 0.9em;
+  .navbar form .input-group {
+    width: 100%;
   }
+  
+  .navbar-nav .nav-link.active::after {
+    display: none;
+  }
+  
+  .navbar-nav .nav-link.active {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 0.25rem;
+  }
+}
+
+

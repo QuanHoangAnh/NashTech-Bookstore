@@ -8,7 +8,6 @@ import ReviewCard from '../components/ReviewCard'; // Component to display a sin
 import ReviewForm from '../components/ReviewForm'; // Component for submitting a new review
 import StarRating from '../components/StarRating'; // Component to display star ratings visually
 import PriceDisplay from '../components/PriceDisplay'; // Reusable price component
-import PaginationControls from '../components/PaginationControls'; // Reusable pagination component
 
 // Import necessary Bootstrap components for UI elements
 import Spinner from 'react-bootstrap/Spinner'; // Loading indicator
@@ -16,7 +15,6 @@ import Alert from 'react-bootstrap/Alert'; // For displaying errors or messages
 import Button from 'react-bootstrap/Button'; // Standard buttons
 import Form from 'react-bootstrap/Form'; // For form elements like Select dropdown
 import InputGroup from 'react-bootstrap/InputGroup'; // For quantity input styling
-import ProgressBar from 'react-bootstrap/ProgressBar'; // For visualizing star rating distribution
 
 // Import custom CSS for page-specific styling
 import './ProductPage.css';
@@ -45,9 +43,13 @@ export default function ProductPage() {
     const [averageRating, setAverageRating] = useState(0);
     const [ratingCounts, setRatingCounts] = useState({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
     const [reviewCurrentPage, setReviewCurrentPage] = useState(1);
-    // Use const as setReviewsPerPage is not used
-    const reviewsPerPage = 10; // Can be made configurable if needed via props or context later
+    const [reviewsPerPage, setReviewsPerPage] = useState(10);
     const [selectedRatingFilter, setSelectedRatingFilter] = useState(null);
+    const [paginationInfo, setPaginationInfo] = useState({
+        startIndex: 0,
+        endIndex: 0,
+        total: 0
+    });
 
     // --- Data Fetching Effects ---
     useEffect(() => {
@@ -66,29 +68,82 @@ export default function ProductPage() {
             sort_by: reviewSortBy,
             skip: (reviewCurrentPage - 1) * reviewsPerPage,
             limit: reviewsPerPage,
-            // Fix Eslint: Remove space after ...
             ...(selectedRatingFilter !== null && { rating: selectedRatingFilter })
         };
         apiService.getReviewsForBook(bookId, params)
             .then(response => {
-                // Assuming backend returns only array for now
-                const data = response.data;
-                 if (Array.isArray(data)) {
-                    setReviews(data);
-                    // WARNING: Needs backend total count for accurate pagination
-                    setTotalReviews(data.length); // Placeholder
-
-                    if (data.length > 0) {
-                        const sum = data.reduce((acc, review) => acc + review.rating_start, 0);
-                        setAverageRating(sum / data.length);
-                        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-                        data.forEach(review => { const r = review.rating_start; if (r >= 1 && r <= 5) counts[r]++; });
-                        setRatingCounts(counts);
-                    } else {
-                        setAverageRating(0); setRatingCounts({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
-                        if (reviewCurrentPage === 1 && selectedRatingFilter === null) { setTotalReviews(0); }
+                // Check if response has items and total_count properties
+                if (response.data && typeof response.data === 'object') {
+                    if (Array.isArray(response.data.items)) {
+                        const totalCount = response.data.total_count || response.data.items.length;
+                        setReviews(response.data.items);
+                        setTotalReviews(totalCount);
+                        
+                        // Calculate average rating and rating counts
+                        if (response.data.items.length > 0) {
+                            // Calculate average rating
+                            const sum = response.data.items.reduce((acc, review) => acc + (review.rating_start || 0), 0);
+                            const avg = sum / response.data.items.length;
+                            setAverageRating(avg);
+                            
+                            // Calculate rating counts
+                            const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                            response.data.items.forEach(review => {
+                                const rating = review.rating_start || 0;
+                                if (rating >= 1 && rating <= 5) {
+                                    counts[rating]++;
+                                }
+                            });
+                            setRatingCounts(counts);
+                        } else {
+                            setAverageRating(0);
+                            setRatingCounts({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
+                        }
+                        
+                        // Update pagination info using totalCount from response
+                        const startIndex = (totalCount > 0) ? (reviewCurrentPage - 1) * reviewsPerPage + 1 : 0;
+                        const endIndex = Math.min(reviewCurrentPage * reviewsPerPage, totalCount);
+                        setPaginationInfo({
+                            startIndex,
+                            endIndex,
+                            total: totalCount
+                        });
+                    } else if (Array.isArray(response.data)) {
+                        // Fallback for array-only response
+                        setReviews(response.data);
+                        setTotalReviews(response.data.length);
+                        
+                        // Calculate average rating and rating counts for array response
+                        if (response.data.length > 0) {
+                            // Calculate average rating
+                            const sum = response.data.reduce((acc, review) => acc + (review.rating_start || 0), 0);
+                            const avg = sum / response.data.length;
+                            setAverageRating(avg);
+                            
+                            // Calculate rating counts
+                            const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+                            response.data.forEach(review => {
+                                const rating = review.rating_start || 0;
+                                if (rating >= 1 && rating <= 5) {
+                                    counts[rating]++;
+                                }
+                            });
+                            setRatingCounts(counts);
+                        } else {
+                            setAverageRating(0);
+                            setRatingCounts({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
+                        }
+                        
+                        // Update pagination info
+                        const startIndex = response.data.length > 0 ? (reviewCurrentPage - 1) * reviewsPerPage + 1 : 0;
+                        const endIndex = Math.min(reviewCurrentPage * reviewsPerPage, response.data.length);
+                        setPaginationInfo({
+                            startIndex,
+                            endIndex,
+                            total: response.data.length
+                        });
                     }
-                } else { /* handle unexpected format */ }
+                }
             })
             .catch(err => { console.error("Error fetching reviews:", err); setErrorReviews('Failed to load reviews. Please try again.'); setReviews([]); setTotalReviews(0); setAverageRating(0); setRatingCounts({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }); })
             .finally(() => setLoadingReviews(false));
@@ -101,8 +156,7 @@ export default function ProductPage() {
         if (reviewCurrentPage !== 1) {
             setReviewCurrentPage(1);
         }
-        // Fix Eslint: Add reviewCurrentPage to dependency array
-    }, [reviewSortBy, selectedRatingFilter, reviewCurrentPage]);
+    }, [reviewSortBy, selectedRatingFilter, reviewsPerPage, reviewCurrentPage]);
 
     // --- Event Handlers ---
     const handleQuantityChange = (delta) => { setQuantity(prev => { const n = prev + delta; return n < 1 ? 1 : n > 8 ? 8 : n; }); };
@@ -115,17 +169,22 @@ export default function ProductPage() {
         setTimeout(() => { setAddCartSuccessMessage(''); }, 3000);
     };
     const submitReview = async (reviewData) => {
-        try {
+        try {   
             await apiService.createReview(bookId, reviewData);
             if (reviewCurrentPage !== 1 && reviewSortBy === 'date_desc') { setReviewCurrentPage(1); } else { fetchReviews(); }
         } catch (error) { console.error("Review submission failed in ProductPage:", error); throw error; }
     };
     const handleRatingFilterClick = (rating) => { setSelectedRatingFilter(prev => prev === rating ? null : rating); };
-    const handleShowAllReviews = () => { setSelectedRatingFilter(null); };
     const handleReviewPageChange = (pageNumber) => {
         const totalPagesCalc = Math.ceil(totalReviews / reviewsPerPage);
         if (pageNumber >= 1 && pageNumber <= totalPagesCalc) { setReviewCurrentPage(pageNumber); }
         else if (pageNumber === 1) { setReviewCurrentPage(1); }
+    };
+    const handleReviewsPerPageChange = (event) => {
+        setReviewsPerPage(Number(event.target.value));
+        if (reviewCurrentPage !== 1) {
+            setReviewCurrentPage(1);
+        }
     };
 
     // --- Main Render Logic ---
@@ -137,8 +196,8 @@ export default function ProductPage() {
     const authorName = book.author?.author_name || 'Unknown Author';
     const categoryName = book.category?.category_name || 'Uncategorized';
     const coverUrl = book.book_cover_photo ? `/images/${book.book_cover_photo}` : DEFAULT_COVER_URL;
-    // Calculate total pages for reviews based on current state (see WARNING in fetchReviews)
-    const reviewTotalPages = Math.ceil(totalReviews / reviewsPerPage);
+    // Calculate total pages for reviews
+    const reviewTotalPages = Math.max(1, Math.ceil(totalReviews / reviewsPerPage));
 
     // --- Return JSX ---
     return (
@@ -151,12 +210,14 @@ export default function ProductPage() {
                  {/* Left Panel: Image & Details */}
                  <div className="col-lg-8">
                      <div className="row g-4">
-                         <div className="col-md-5 text-center">
-                             <img src={coverUrl} alt={book.book_title || "Book cover"} onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER_URL; }} className="img-fluid rounded border product-image-custom" />
+                         <div className="col-md-5">
+                             <div className="book-image-container">
+                                 <img src={coverUrl} alt={book.book_title || "Book cover"} onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_COVER_URL; }} className="img-fluid rounded border product-image-custom" />
+                                 <p className="text-muted author-credit">By <span className="fw-bold">{authorName}</span></p>
+                             </div>
                          </div>
                          <div className="col-md-7">
                              <h1>{book.book_title}</h1>
-                             <p className="text-muted fs-5 mb-3">By {authorName}</p>
                              <p className="product-description-custom">{book.book_summary || 'No description available.'}</p>
                          </div>
                      </div>
@@ -164,12 +225,15 @@ export default function ProductPage() {
                  {/* Right Panel: Price & Add to Cart */}
                  <div className="col-lg-4">
                      <div className="border rounded p-3 bg-light product-order-panel-custom">
-                         <PriceDisplay originalPrice={book.book_price} discountPrice={book.discount_price} className="text-end mb-3" />
-                         <InputGroup className="mb-3 quantity-input-custom justify-content-center">
-                             <Button variant="outline-secondary" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>–</Button>
-                             <Form.Control type="text" readOnly value={quantity} className="text-center" style={{ width: '50px', minWidth: '50px', fontWeight: 'bold', color: '#212529', backgroundColor: '#fff' }} aria-label="Quantity" />
-                             <Button variant="outline-secondary" onClick={() => handleQuantityChange(1)} disabled={quantity >= 8}>+</Button>
-                         </InputGroup>
+                         <PriceDisplay originalPrice={book.book_price} discountPrice={book.discount_price} className="mb-3" />
+                         <div>
+                             <div className="mb-1">Quantity</div>
+                             <InputGroup className="mb-3">
+                                 <Button variant="outline-secondary" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>–</Button>
+                                 <Form.Control type="text" readOnly value={quantity} className="text-center" style={{ width: '50px', minWidth: '50px', fontWeight: 'bold', color: '#212529', backgroundColor: '#fff' }} aria-label="Quantity" />
+                                 <Button variant="outline-secondary" onClick={() => handleQuantityChange(1)} disabled={quantity >= 8}>+</Button>
+                             </InputGroup>
+                         </div>
                          {addCartSuccessMessage && ( <Alert variant="success" className="mt-2 mb-3 py-2 px-3 small text-center">{addCartSuccessMessage}</Alert> )}
                          <div className="d-grid"> <Button variant="dark" size="lg" onClick={handleAdd}>Add to cart</Button> </div>
                      </div>
@@ -183,26 +247,63 @@ export default function ProductPage() {
                      {/* Left Panel: Review Summary, Filters, List, Pagination */}
                      <div className="col-md-7">
                          {/* Review Summary Block */}
-                         <div className="mb-3 d-flex flex-wrap justify-content-between align-items-center review-summary-block">
+                         <div className="mb-3 d-flex flex-wrap align-items-center review-summary-block">
                              <div className="me-3 mb-2 mb-md-0"> <strong className="me-2">Average:</strong> <StarRating rating={averageRating} /> <span className="ms-2 text-muted">({averageRating.toFixed(1)} / 5)</span> </div>
-                             <Button variant="link" size="sm" onClick={handleShowAllReviews} className="text-muted p-0 text-decoration-none"> {totalReviews} Review{totalReviews !== 1 ? 's' : ''} </Button>
                          </div>
-                         {/* Review Counts Per Star */}
-                         <div className="mb-3 review-star-counts">
-                             {[5, 4, 3, 2, 1].map(star => (
-                                 <div key={star} className={`d-flex align-items-center count-row mb-1 filter-row ${selectedRatingFilter === star ? 'active-filter' : ''}`} onClick={() => handleRatingFilterClick(star)} style={{ cursor: 'pointer' }} role="button" tabIndex={0} onKeyPress={(e) => e.key === 'Enter' && handleRatingFilterClick(star)} aria-label={`Filter by ${star} star reviews`}>
-                                     <span className="star-label me-2 text-nowrap" style={{minWidth: '50px'}}>{star} star</span>
-                                     <ProgressBar now={totalReviews > 0 ? (ratingCounts[star] / totalReviews * 100) : 0} variant="warning" className="flex-grow-1 me-2" style={{height: '8px'}} aria-label={`${ratingCounts[star]} reviews with ${star} stars`} />
-                                     <span className="count text-muted">({ratingCounts[star]})</span>
-                                 </div>
+                         {/* Review Counts Per Star - Horizontal format */}
+                         <div className="mb-3 d-flex flex-wrap align-items-center">
+                             <span className="me-3">({totalReviews} reviews)</span>
+                             {[5, 4, 3, 2, 1].map((star, index) => (
+                                 <React.Fragment key={star}>
+                                     <span 
+                                         className={`me-3 star-filter ${selectedRatingFilter === star ? 'active-filter' : ''}`}
+                                         onClick={() => handleRatingFilterClick(star)}
+                                         style={{ cursor: 'pointer' }}
+                                         role="button"
+                                         tabIndex={0}
+                                         onKeyPress={(e) => e.key === 'Enter' && handleRatingFilterClick(star)}
+                                     >
+                                         {star} star ({ratingCounts[star]})
+                                     </span>
+                                     {index < 4 && <span className="me-3">|</span>}
+                                 </React.Fragment>
                              ))}
                          </div>
-                         {/* Sort Dropdown */}
-                         <div className="d-flex justify-content-end mb-3">
-                             <Form.Select size="sm" value={reviewSortBy} onChange={e => setReviewSortBy(e.target.value)} aria-label="Sort reviews by" style={{ maxWidth: '180px' }}>
-                                 <option value="date_desc">Sort by: Newest first</option>
-                                 <option value="date_asc">Sort by: Oldest first</option>
-                             </Form.Select>
+                         {/* Sort Dropdown and Items Per Page */}
+                         <div className="d-flex justify-content-between align-items-center mb-3">
+                             <div>
+                                 {reviews.length > 0 && (
+                                     <span className="text-muted">
+                                         Showing {paginationInfo.startIndex}-{paginationInfo.endIndex} of {totalReviews} reviews
+                                     </span>
+                                 )}
+                             </div>
+                             <div className="d-flex align-items-center">
+                                 <Form.Select 
+                                     size="sm" 
+                                     value={reviewsPerPage} 
+                                     onChange={handleReviewsPerPageChange} 
+                                     aria-label="Items per page"
+                                     className="me-2"
+                                     style={{ maxWidth: '120px' }}
+                                 >
+                                     <option value={5}>Show 5</option>
+                                     <option value={10}>Show 10</option>
+                                     <option value={15}>Show 15</option>
+                                     <option value={20}>Show 20</option>
+                                     <option value={25}>Show 25</option>
+                                 </Form.Select>
+                                 <Form.Select 
+                                     size="sm" 
+                                     value={reviewSortBy} 
+                                     onChange={e => setReviewSortBy(e.target.value)} 
+                                     aria-label="Sort reviews by" 
+                                     style={{ maxWidth: '180px' }}
+                                 >
+                                     <option value="date_desc">Sort by: Newest first</option>
+                                     <option value="date_asc">Sort by: Oldest first</option>
+                                 </Form.Select>
+                             </div>
                          </div>
                          {/* Review List & Pagination */}
                          {loadingReviews ? ( <div className="text-center p-4"><Spinner animation="border" size="sm" /></div> )
@@ -210,12 +311,90 @@ export default function ProductPage() {
                            : reviews.length > 0 ? (
                                <>
                                    <div className="list-group review-list-custom"> {reviews.map(review => ( <ReviewCard key={review.id} review={review} /> ))} </div>
-                                   {/* Use PaginationControls component */}
-                                   <PaginationControls
-                                       currentPage={reviewCurrentPage}
-                                       totalPages={reviewTotalPages} // Use calculated total pages
-                                       onPageChange={handleReviewPageChange}
-                                   />
+                                   {/* Custom Pagination Controls */}
+                                   {reviewTotalPages > 1 && (
+                                       <div className="d-flex justify-content-center mt-4">
+                                           <ul className="pagination">
+                                               {/* Previous button */}
+                                               <li className={`page-item ${reviewCurrentPage === 1 ? 'disabled' : ''}`}>
+                                                   <button 
+                                                       className="page-link" 
+                                                       onClick={() => handleReviewPageChange(reviewCurrentPage - 1)}
+                                                       disabled={reviewCurrentPage === 1}
+                                                   >
+                                                       Previous
+                                                   </button>
+                                               </li>
+                                               
+                                               {/* First page */}
+                                               {reviewCurrentPage > 3 && (
+                                                   <li className="page-item">
+                                                       <button className="page-link" onClick={() => handleReviewPageChange(1)}>1</button>
+                                                   </li>
+                                               )}
+                                               
+                                               {/* Ellipsis after first page */}
+                                               {reviewCurrentPage > 3 && (
+                                                   <li className="page-item disabled">
+                                                       <span className="page-link">...</span>
+                                                   </li>
+                                               )}
+                                               
+                                               {/* Page numbers */}
+                                               {[...Array(reviewTotalPages)].map((_, i) => {
+                                                   const pageNum = i + 1;
+                                                   // Show current page and 1 page before and after
+                                                   if (
+                                                       pageNum === reviewCurrentPage ||
+                                                       pageNum === reviewCurrentPage - 1 ||
+                                                       pageNum === reviewCurrentPage + 1
+                                                   ) {
+                                                       return (
+                                                           <li key={pageNum} className={`page-item ${reviewCurrentPage === pageNum ? 'active' : ''}`}>
+                                                               <button 
+                                                                   className="page-link" 
+                                                                   onClick={() => handleReviewPageChange(pageNum)}
+                                                               >
+                                                                   {pageNum}
+                                                               </button>
+                                                           </li>
+                                                       );
+                                                   }
+                                                   return null;
+                                               })}
+                                               
+                                               {/* Ellipsis before last page */}
+                                               {reviewCurrentPage < reviewTotalPages - 2 && (
+                                                   <li className="page-item disabled">
+                                                       <span className="page-link">...</span>
+                                                   </li>
+                                               )}
+                                               
+                                               {/* Last page */}
+                                               {reviewCurrentPage < reviewTotalPages - 2 && (
+                                                   <li className="page-item">
+                                                       <button 
+                                                           className="page-link" 
+                                                           onClick={() => handleReviewPageChange(reviewTotalPages)}
+                                                       >
+                                                           {reviewTotalPages}
+                                                       </button>
+                                                   </li>
+                                               )}
+                                               
+                                               {/* Next button */}
+                                               <li className={`page-item ${reviewCurrentPage === reviewTotalPages ? 'disabled' : ''}`}>
+                                                   <button 
+                                                       className="page-link" 
+                                                       onClick={() => handleReviewPageChange(reviewCurrentPage + 1)}
+                                                       disabled={reviewCurrentPage === reviewTotalPages}
+                                                   >
+                                                       Next
+                                                   </button>
+                                               </li>
+                                           </ul>
+                                       </div>
+                                   )}
                                </>
                            )
                            : ( <p className="text-muted text-center mt-3"> {selectedRatingFilter !== null ? `No reviews found matching ${selectedRatingFilter} star.` : `No reviews yet. Be the first to review!`} </p> )}
@@ -227,3 +406,19 @@ export default function ProductPage() {
         </div>
     );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

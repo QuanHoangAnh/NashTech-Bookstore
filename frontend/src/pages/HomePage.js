@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "slick-carousel/slick/slick.css";
-import Slider from 'react-slick'; // Keep react-slick for carousel
+import Slider from 'react-slick';
 import apiService from '../services/api';
-import BookCard from '../components/BookCard'; // Assumes BookCard is refactored
-import './HomePage.css'; // Keep for custom carousel arrows, etc.
+import BookCard from '../components/BookCard';
+import './HomePage.css';
 
 function HomePage() {
   const [onSaleBooks, setOnSaleBooks] = useState([]);
@@ -16,7 +16,7 @@ function HomePage() {
   const [loadingPopular, setLoadingPopular] = useState(true);
 
   const navigate = useNavigate();
-  const sliderRef = useRef(null); // Keep ref for custom arrows
+  const onSaleSliderRef = useRef(null);
 
   useEffect(() => {
     // Fetch On Sale Books
@@ -41,26 +41,23 @@ function HomePage() {
       .finally(() => setLoadingPopular(false));
   }, []);
 
-  const handleViewAllClick = () => {
-    navigate('/shop', { state: { initialSort: 'on_sale_home' } });
+  const handleViewAllClick = (sortType = 'on_sale_home') => {
+    navigate('/shop', { state: { initialSort: sortType } });
   };
 
-  // Keep slider settings, adjust responsive breakpoints if needed
   const sliderSettings = {
-    dots: false,
-    infinite: onSaleBooks.length > 4, // Only infinite if enough slides
+    dots: true,
+    infinite: onSaleBooks.length > 4,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    // autoplay: true, // Keep or remove based on preference
-    // autoplaySpeed: 5000,
     pauseOnHover: true,
-    arrows: false, // Using custom arrows
+    arrows: false,
     responsive: [
-      { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 1 } },
-      { breakpoint: 992, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-      { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1 } },
-      { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1 } }
+      { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 1, dots: true } },
+      { breakpoint: 992, settings: { slidesToShow: 3, slidesToScroll: 1, dots: true } },
+      { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 1, dots: true } },
+      { breakpoint: 576, settings: { slidesToShow: 1, slidesToScroll: 1, dots: true } }
     ]
   };
 
@@ -68,7 +65,7 @@ function HomePage() {
   const isLoadingFeatured = activeFeaturedTab === 'recommended' ? loadingRecommended : loadingPopular;
 
   const renderBookGrid = (books) => (
-    <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+    <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
       {books.map(book => (
         <div className="col" key={book.id}>
           <BookCard book={book} />
@@ -78,8 +75,8 @@ function HomePage() {
   );
 
   const renderLoadingState = () => (
-    <div className="text-center p-5">
-      <div className="spinner-border text-secondary" role="status">
+    <div className="text-center p-4">
+      <div className="spinner-border text-primary" role="status">
         <span className="visually-hidden">Loading...</span>
       </div>
     </div>
@@ -91,32 +88,29 @@ function HomePage() {
      </div>
   );
 
-
   return (
-    // Use Bootstrap container for padding and centering
-    <div className="container my-4 homepage">
+    <div className="container-fluid px-4 px-md-5 my-5 homepage">
       {/* On Sale Section */}
       <section className="mb-5">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2 className="m-0">On Sale</h2>
-          <button onClick={handleViewAllClick} className="btn btn-outline-secondary btn-sm view-all-button-custom">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="m-0 fw-bold">On Sale</h2>
+          <button onClick={() => handleViewAllClick('on_sale_home')} className="btn btn-outline-primary btn-sm view-all-button-custom">
             View All <span className="arrow">▸</span>
           </button>
         </div>
         {loadingSale ? (
           renderLoadingState()
         ) : onSaleBooks.length > 0 ? (
-          <div className="slider-container position-relative px-5"> {/* Added padding for arrows */}
-            {/* Custom Arrows */}
-            <button className="custom-arrow custom-arrow-prev" onClick={() => sliderRef.current?.slickPrev()}>❮</button>
-            <Slider ref={sliderRef} {...sliderSettings}>
+          <div className="slider-container position-relative px-5 py-3 bg-white rounded shadow-sm">
+            <button className="custom-arrow custom-arrow-prev" onClick={() => onSaleSliderRef.current?.slickPrev()}>❮</button>
+            <Slider ref={onSaleSliderRef} {...sliderSettings}>
               {onSaleBooks.map(book => (
-                <div key={book.id} className="p-2"> {/* Added padding around card */}
+                <div key={book.id} className="px-2">
                   <BookCard book={book} />
                 </div>
               ))}
             </Slider>
-            <button className="custom-arrow custom-arrow-next" onClick={() => sliderRef.current?.slickNext()}>❯</button>
+            <button className="custom-arrow custom-arrow-next" onClick={() => onSaleSliderRef.current?.slickNext()}>❯</button>
           </div>
         ) : (
           renderErrorState("No books currently on sale.")
@@ -124,21 +118,20 @@ function HomePage() {
       </section>
 
       {/* Featured Books Section */}
-      <section>
-        <h2 className="text-center mb-3">Featured Books</h2>
-        {/* Bootstrap Nav Tabs */}
-        <ul className="nav nav-tabs justify-content-center mb-4">
-          <li className="nav-item">
+      <section className="mb-5">
+        <h2 className="text-center fw-bold mb-4">Featured Books</h2>
+        <ul className="nav nav-pills justify-content-center mb-4">
+          <li className="nav-item mx-1">
             <button
-              className={`nav-link ${activeFeaturedTab === 'recommended' ? 'active' : ''}`}
+              className={`nav-link px-4 ${activeFeaturedTab === 'recommended' ? 'active' : ''}`}
               onClick={() => setActiveFeaturedTab('recommended')}
             >
               Recommended
             </button>
           </li>
-          <li className="nav-item">
+          <li className="nav-item mx-1">
             <button
-              className={`nav-link ${activeFeaturedTab === 'popular' ? 'active' : ''}`}
+              className={`nav-link px-4 ${activeFeaturedTab === 'popular' ? 'active' : ''}`}
               onClick={() => setActiveFeaturedTab('popular')}
             >
               Popular
@@ -146,10 +139,19 @@ function HomePage() {
           </li>
         </ul>
 
+        <div className="d-flex justify-content-end mb-3">
+          <button 
+            onClick={() => handleViewAllClick(activeFeaturedTab === 'recommended' ? 'recommended' : 'popularity')} 
+            className="btn btn-outline-primary btn-sm view-all-button-custom"
+          >
+            View All <span className="arrow">▸</span>
+          </button>
+        </div>
+
         {isLoadingFeatured ? (
           renderLoadingState()
         ) : featuredBooksToDisplay.length > 0 ? (
-           <div className="featured-books-grid-container border rounded p-3">
+           <div className="featured-books-grid-container border rounded p-4 bg-white shadow-sm">
              {renderBookGrid(featuredBooksToDisplay)}
            </div>
         ) : (
@@ -161,3 +163,7 @@ function HomePage() {
 }
 
 export default HomePage;
+
+
+
+

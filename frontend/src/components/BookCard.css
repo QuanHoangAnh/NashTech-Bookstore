@@ -2,54 +2,55 @@
 
 /* Keep minimal overrides for Bootstrap card */
 .book-card-custom {
-  /* Maintain specific height if Bootstrap's h-100 isn't enough */
-  /* height: 380px; */ /* Or rely on h-100 */
-  transition: box-shadow 0.2s ease-in-out;
-  border: 1px solid #eee; /* Keep subtle border */
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.08);
+  overflow: hidden;
 }
 
 .book-card-custom:hover {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add hover effect */
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
 }
 
 .book-cover-wrapper {
-  height: 220px; /* Maintain specific cover height */
-  overflow: hidden; /* Ensure image stays within bounds */
-  border-bottom: 1px solid #eee;
+  height: 200px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 0.5rem;
 }
 
 .book-cover-img {
   max-height: 100%;
   max-width: 100%;
-  object-fit: contain; /* Was contain before */
+  object-fit: contain;
+  transition: transform 0.3s ease;
 }
 
-/* Custom class for title clamping */
+.book-card-custom:hover .book-cover-img {
+  transform: scale(1.05);
+}
+
 .book-title-clamp {
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.3; /* Adjust line height */
-  font-size: 1em; /* Match previous size */
-  min-height: calc(2 * 1.3em); /* Reserve space for 2 lines */
+  font-size: 1rem;
 }
 
-.book-price-section {
-    font-size: 0.95em; /* Adjust price font size if needed */
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .book-cover-wrapper {
+    height: 180px;
+  }
 }
 
-/* Remove styles replaced by Bootstrap card/utilities */
-/* .book-card-link { ... } */
-/* .book-card { ... } */
-/* .book-cover { ... } */
-/* .book-info { ... } */
-/* .book-title { ... } */
-/* .book-author { ... } */
-/* .book-price-section { ... } */
-/* .original-price { ... } */
-/* .discount-price { ... } */
+@media (max-width: 768px) {
+  .book-card-custom:hover {
+    transform: translateY(-3px);
+  }
+}
 
-/* Responsive adjustments might be handled by Bootstrap grid columns */
-/* @media (max-width: 768px) { ... } */
+
+
+

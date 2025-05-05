@@ -16,7 +16,7 @@ const formatPrice = (price) => {
  *  - discountPrice (optional): The discounted price, if available and active.
  *  - className (optional): Additional CSS classes for the container div.
  */
-function PriceDisplay({ originalPrice, discountPrice, className = '' }) {
+function PriceDisplay({ originalPrice, discountPrice, className = '', vertical = false }) {
     const formattedOPrice = formatPrice(originalPrice);
     const formattedDPrice = formatPrice(discountPrice);
 
@@ -31,20 +31,33 @@ function PriceDisplay({ originalPrice, discountPrice, className = '' }) {
 
     if (hasValidDiscount) {
         // If discounted, show original price struck-through and the new discount price
-        return (
-            <div className={baseClassName}>
-                <span className="text-decoration-line-through text-muted me-2 fs-5">
-                    ${formattedOPrice}
-                </span>
-                <span className="fw-bold text-dark fs-4">
-                    ${formattedDPrice}
-                </span>
-            </div>
-        );
+        if (vertical) {
+            return (
+                <div className={baseClassName}>
+                    <div className="text-decoration-line-through text-muted small">
+                        ${formattedOPrice}
+                    </div>
+                    <div className="fw-bold text-dark">
+                        ${formattedDPrice}
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div className={baseClassName}>
+                    <span className="text-decoration-line-through text-muted me-2 fs-5">
+                        ${formattedOPrice}
+                    </span>
+                    <span className="fw-bold text-dark fs-4">
+                        ${formattedDPrice}
+                    </span>
+                </div>
+            );
+        }
     } else if (formattedOPrice !== null) {
         // If not discounted (or discount invalid), show only the original price
         return (
-            <div className={`${baseClassName} fw-bold text-dark fs-4`}>
+            <div className={`${baseClassName} fw-bold text-dark ${vertical ? '' : 'fs-4'}`}>
                 ${formattedOPrice}
             </div>
         );

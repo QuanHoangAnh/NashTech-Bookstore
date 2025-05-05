@@ -131,11 +131,11 @@ export const CartProvider = ({ children }) => {
         // Create the cart item structure consistently
         const newItem = {
           id: itemToAdd.id,
-          title: itemToAdd.title || 'Unknown Title', // Use directly, provide fallback
-          authorName: itemToAdd.authorName || 'Unknown Author', // Use directly, provide fallback
-          price: itemToAdd.price, // Use directly
-          discountPrice: itemToAdd.discount_price, // Use property name from ProductPage data
-          cover: itemToAdd.book_cover_photo, // Use property name from ProductPage data, store as 'cover'
+          title: itemToAdd.title || 'Unknown Title',
+          authorName: itemToAdd.authorName || 'Unknown Author',
+          price: itemToAdd.price,
+          discountPrice: itemToAdd.discountPrice, // Match the property name used in ProductPage
+          cover: itemToAdd.cover || itemToAdd.book_cover_photo,
           quantity: quantityToAdd,
         };
         alert(`${quantityToAdd} x "${newItem.title}" added to cart!`);
@@ -188,6 +188,19 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem('bookwormGuestCart'); // Fixed key
   };
 
+  const saveCartToBackend = async () => {
+    if (currentUser && userCartItems.length > 0) {
+      try {
+        await apiService.updateUserCart(userCartItems);
+        return true;
+      } catch (error) {
+        console.error("Failed to save cart to backend:", error);
+        return false;
+      }
+    }
+    return true; // No need to save if no user or empty cart
+  };
+
   const value = {
     cartItems,
     addToCart,
@@ -196,6 +209,7 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     getCartTotal,
     clearCart,
+    saveCartToBackend,
   };
 
   return (
@@ -204,3 +218,5 @@ export const CartProvider = ({ children }) => {
     </CartContext.Provider>
   );
 };
+
+

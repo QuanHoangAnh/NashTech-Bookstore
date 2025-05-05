@@ -1,39 +1,36 @@
-// frontend/src/components/SearchBar.js
+// src/components/SearchBar.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
+// Removed unused import: import InputGroup from 'react-bootstrap/InputGroup';
 
 function SearchBar() {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const handleSearchSubmit = (event) => {
+  const handleSearch = (event) => {
     event.preventDefault();
-    const trimmedSearchTerm = searchTerm.trim();
-    if (trimmedSearchTerm) {
-      // Navigate to the search results page with the query parameter
-      navigate(`/search?q=${encodeURIComponent(trimmedSearchTerm)}`);
-      setSearchTerm(''); // Optional: clear search bar after submit
+    if (searchTerm.trim()) {
+      // Update to use 'search' parameter to match backend expectation
+      navigate(`/shop?search=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
 
   return (
-    <Form onSubmit={handleSearchSubmit} className="d-flex ms-auto me-3" style={{ maxWidth: '300px' }}>
-       {/* Use InputGroup for button addon style */}
-      <InputGroup>
-        <Form.Control
-          type="search"
-          placeholder="Search title or author..."
-          aria-label="Search Books"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <Button variant="outline-secondary" type="submit" disabled={!searchTerm.trim()}>
-          Search
-        </Button>
-      </InputGroup>
+    // Using d-flex for layout instead of InputGroup here
+    <Form onSubmit={handleSearch} className="d-flex">
+      <Form.Control
+        type="search"
+        placeholder="Search title or author..."
+        className="me-2" // Margin end for spacing
+        aria-label="Search"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <Button variant="outline-success" type="submit">
+        Search
+      </Button>
     </Form>
   );
 }
